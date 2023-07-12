@@ -1,0 +1,2 @@
+# numactl
+numactl解析
