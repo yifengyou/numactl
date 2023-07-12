@@ -1,0 +1,26 @@
+From 26fba7199c365b55e72e054bb2adba097ce04924 Mon Sep 17 00:00:00 2001
+From: Seeteena Thoufeek <s1seetee@linux.vnet.ibm.com>
+Date: Wed, 8 Jan 2020 14:39:01 +0530
+Subject: [PATCH] Update manpage description of --localalloc option
+
+Signed-off-by: Seeteena Thoufeek <s1seetee@linux.vnet.ibm.com>
+---
+ numactl.8 | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/numactl.8 b/numactl.8
+index 7a001c0..f3bb22b 100644
+--- a/numactl.8
++++ b/numactl.8
+@@ -159,7 +159,7 @@ A !N-N notation indicates the inverse of N-N, in other words all cpus
+ except N-N.  If used with + notation, specify !+N-N.
+ .TP
+ .B \-\-localalloc, \-l 
+-Always allocate on the current node.
++Try to allocate on the current node of the process, but if memory cannot be allocated there fall back to other nodes.
+ .TP
+ .B \-\-preferred=node
+ Preferably allocate memory on 
+-- 
+2.7.5
+

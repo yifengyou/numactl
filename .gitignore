@@ -46,7 +46,13 @@
 *.mod*
 *.cmd
 .tmp_versions/
+
 modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+.vscode*
+SRPMS
+RPMS
+BUILDROOT
+*.drawio.bkp

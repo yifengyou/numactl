@@ -1,0 +1,33 @@
+From c2b0a955a415c104be0fa1b3118f48f726fd23ea Mon Sep 17 00:00:00 2001
+From: Stefan Hajnoczi <stefanha@redhat.com>
+Date: Tue, 9 Jul 2019 16:10:46 +0200
+Subject: [PATCH] numastat.8: clarify that information relates to resident
+ pages
+
+The man page gives no hint about whether memory usage information
+relates to resident pages or virtual memory.  The answer may not be
+obvious to the user, so explicitly mention that only resident pages are
+counted.
+
+Suggested-by: Daniele Palumbo <daniele@retaggio.net>
+Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
+---
+ numastat.8 | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/numastat.8 b/numastat.8
+index 4dcddf3..7fbcab2 100644
+--- a/numastat.8
++++ b/numastat.8
+@@ -54,6 +54,8 @@ Any supplied options or arguments with the \fBnumastat\fP command will
+ significantly change both the content and the format of the display.  Specified
+ options will cause display units to change to megabytes of memory, and will
+ change other specific behaviors of \fBnumastat\fP as described below.
++.LP
++Memory usage information reflects the resident pages on the system.
+ .SH "OPTIONS"
+ .LP
+ .TP
+-- 
+2.7.5
+

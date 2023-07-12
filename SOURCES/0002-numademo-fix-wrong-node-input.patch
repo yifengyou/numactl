@@ -1,0 +1,63 @@
+From 2b190afdbbff875e519e4ae45390bdde11e8e190 Mon Sep 17 00:00:00 2001
+From: Harish <harish@linux.vnet.ibm.com>
+Date: Wed, 20 Jun 2018 18:46:55 +0530
+Subject: [PATCH 2/7] numademo: fix wrong node input
+
+In few sparse node systems, test fails with invalid argument at
+set_mempolicy through numa_preferred_node. Patch fixes it by
+providing a valid wrong node.
+
+Signed-off-by: Harish <harish@linux.vnet.ibm.com>
+Signed-off-by: Pingfan Liu <piliu@redhat.com>
+---
+ numademo.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/numademo.c b/numademo.c
+index 90d8e84..4d3c058 100644
+--- a/numademo.c
++++ b/numademo.c
+@@ -298,7 +298,7 @@ int popcnt(unsigned long val)
+ 
+ int max_node, numnodes;
+ 
+-void get_node_list()
++int get_node_list()
+ {
+         int a, got_nodes = 0;
+         long free_node_sizes;
+@@ -310,6 +310,9 @@ void get_node_list()
+                 if (numa_node_size(a, &free_node_sizes) > 0)
+                         node_to_use[got_nodes++] = a;
+         }
++        if(got_nodes != numnodes)
++                return -1;
++        return 0;
+ }
+ 
+ void test(enum test type)
+@@ -436,7 +439,7 @@ void test(enum test type)
+ 		numa_set_localalloc();
+ 		memtest("local allocation", numa_alloc(msize));
+ 
+-		numa_set_preferred((node_to_use[i]+1) % numnodes );
++		numa_set_preferred(node_to_use[(i + 1) % numnodes]);
+ 		memtest("setting wrong preferred node", numa_alloc(msize));
+ 		numa_set_preferred(node_to_use[i]);
+ 		memtest("setting correct preferred node", numa_alloc(msize));
+@@ -512,7 +515,11 @@ int main(int ac, char **av)
+ 		if (!force)
+ 			exit(1);
+ 	}
+-	get_node_list();
++	if(get_node_list()){
++		fprintf(stderr, "Configured Nodes does not match available memory nodes\n");
++		exit(1);
++	}
++
+ 	printf("%d nodes available\n", numnodes);
+ 	fract_nodes = (((numnodes-1)/8)*2) + FRACT_NODES;
+ 
+-- 
+2.7.4
+

@@ -1,0 +1,35 @@
+From 93867c59b0bb29470873a427dc7f06ebaf305221 Mon Sep 17 00:00:00 2001
+From: Pingfan Liu <piliu@redhat.com>
+Date: Mon, 29 Mar 2021 17:33:06 +0800
+Subject: [PATCH] libnuma: make numa_police_memory() free of race
+
+When numa_police_memory() read-write to memory, it can risk the race of
+another thread write to the same area.
+
+Using atomic function to protect the read-write operation
+
+Signed-off-by: Pingfan Liu <piliu@redhat.com>
+---
+ libnuma.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/libnuma.c b/libnuma.c
+index f073c50..7b8290c 100644
+--- a/libnuma.c
++++ b/libnuma.c
+@@ -864,8 +864,10 @@ void numa_police_memory(void *mem, size_t size)
+ {
+ 	int pagesize = numa_pagesize_int();
+ 	unsigned long i;
+-	for (i = 0; i < size; i += pagesize)
+-        ((volatile char*)mem)[i] = ((volatile char*)mem)[i];
++	char *p = mem;
++	for (i = 0; i < size; i += pagesize, p += pagesize)
++		__atomic_and_fetch(p, 0xff, __ATOMIC_RELAXED);
++
+ }
+ 
+ make_internal_alias(numa_police_memory);
+-- 
+2.29.2
+

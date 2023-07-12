@@ -1,0 +1,32 @@
+From cd7c78e77dc43fff5dbe2763f1ac83a8b4a6b1c7 Mon Sep 17 00:00:00 2001
+From: Harish <harish@linux.vnet.ibm.com>
+Date: Thu, 21 Jun 2018 07:53:10 +0530
+Subject: [PATCH 1/7] Fix: node_list with memory-less nodes
+
+Patch adds check to avoid memory-less nodes while traversing till
+max node, and this also prevents nodes_to_use sysmalloc failure as
+nodes_to_use is malloc'ed with numa_num_configured_nodes which
+returns the number of nodes configured with memory.
+
+Signed-off-by: Harish <harish@linux.vnet.ibm.com>
+Signed-off-by: Pingfan Liu <piliu@redhat.com>
+---
+ numademo.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/numademo.c b/numademo.c
+index b01e995..90d8e84 100644
+--- a/numademo.c
++++ b/numademo.c
+@@ -307,7 +307,7 @@ void get_node_list()
+         node_to_use = (int *)malloc(numnodes * sizeof(int));
+         max_node = numa_max_node();
+         for (a = 0; a <= max_node; a++) {
+-                if(numa_node_size(a, &free_node_sizes) != -1)
++                if (numa_node_size(a, &free_node_sizes) > 0)
+                         node_to_use[got_nodes++] = a;
+         }
+ }
+-- 
+2.7.4
+

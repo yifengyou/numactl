@@ -1,0 +1,48 @@
+From d1bc1653b3f86b8951b876946a94db681764fa2a Mon Sep 17 00:00:00 2001
+From: Filipe Brandenburger <filbranden@google.com>
+Date: Fri, 15 Jun 2018 14:16:23 -0700
+Subject: [PATCH 5/7] Correct calculation of nr_nodes and re-enable move_pages
+ test
+
+This was pointed out by @bjsprakash in #8.
+
+After the bug is corrected, we can re-enable the test in `make check`,
+since most machines these days will have at least two nodes by default.
+
+Travis-CI still fails with this test (one node only available), so keep
+skipping it there.
+
+Signed-off-by: Pingfan Liu <piliu@redhat.com>
+---
+ Makefile.am       | 1 +
+ test/move_pages.c | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/Makefile.am b/Makefile.am
+index 03b0ab6..1c4266d 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -134,6 +134,7 @@ TESTS = \
+ 	test/checkaffinity \
+ 	test/checktopology \
+ 	test/distance \
++	test/move_pages \
+ 	test/nodemap \
+ 	test/numademo \
+ 	test/regress \
+diff --git a/test/move_pages.c b/test/move_pages.c
+index 87d9b3e..c5010e2 100644
+--- a/test/move_pages.c
++++ b/test/move_pages.c
+@@ -28,7 +28,7 @@ int main(int argc, char **argv)
+ 
+ 	pagesize = getpagesize();
+ 
+-	nr_nodes = numa_max_node();
++	nr_nodes = numa_max_node() + 1;
+ 
+ 	if (nr_nodes < 2) {
+ 		printf("A minimum of 2 nodes is required for this test.\n");
+-- 
+2.7.4
+

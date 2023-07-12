@@ -1,0 +1,39 @@
+From a8f5ed65b745f96f5e5af72bace8e7c63b96fd4e Mon Sep 17 00:00:00 2001
+From: Sanskriti Sharma <sansharm@redhat.com>
+Date: Thu, 13 Sep 2018 10:01:58 -0400
+Subject: [PATCH 7/7] Fix: Add ShmemHugePages and ShmemPmdMapped to
+ system_meminfo[]
+
+ShmemHugePages and ShmemPmdMapped were recently added to
+/sys/devices/system/node/node*/meminfo. Adding entries for them in the
+system_meminfo data structure got rid of the error "Token Node not in hash
+table."
+
+Signed-off-by: Sanskriti Sharma <sansharm@redhat.com>
+Signed-off-by: Pingfan Liu <piliu@redhat.com>
+---
+ numastat.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/numastat.c b/numastat.c
+index 92d8496..25874db 100644
+--- a/numastat.c
++++ b/numastat.c
+@@ -122,9 +122,11 @@ meminfo_t system_meminfo[] = {
+ 	{ 27, "SReclaimable", "SReclaimable" },
+ 	{ 28, "SUnreclaim", "SUnreclaim" },
+ 	{ 29, "AnonHugePages", "AnonHugePages" },
+-	{ 30, "HugePages_Total", "HugePages_Total" },
+-	{ 31, "HugePages_Free", "HugePages_Free" },
+-	{ 32, "HugePages_Surp", "HugePages_Surp" }
++	{ 30, "ShmemHugePages", "ShmemHugePages" },
++	{ 31, "ShmemPmdMapped", "ShmemPmdMapped" },
++	{ 32, "HugePages_Total", "HugePages_Total" },
++	{ 33, "HugePages_Free", "HugePages_Free" },
++	{ 34, "HugePages_Surp", "HugePages_Surp" }
+ };
+ 
+ #define SYSTEM_MEMINFO_ROWS (sizeof(system_meminfo) / sizeof(system_meminfo[0]))
+-- 
+2.7.4
+

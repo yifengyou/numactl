@@ -1,0 +1,50 @@
+From c465ca7ca41aa03e755ed71fa0281c620b0d8dc0 Mon Sep 17 00:00:00 2001
+From: Harish <harish@linux.vnet.ibm.com>
+Date: Thu, 21 Jun 2018 17:22:36 +0530
+Subject: [PATCH 3/7] Fix: distance test to include all existing nodes
+
+The previous implementation did not consider memory-less nodes as
+numa_num_configured_nodes() returns only nodes with memory and
+numa_node_size() check is unnecessary for distance check. Hence
+removed the check for memory.
+
+Signed-off-by: Harish <harish@linux.vnet.ibm.com>
+Signed-off-by: Pingfan Liu <piliu@redhat.com>
+---
+ test/distance.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
+
+diff --git a/test/distance.c b/test/distance.c
+index fca109f..3471db6 100644
+--- a/test/distance.c
++++ b/test/distance.c
+@@ -5,21 +5,20 @@
+ 
+ int main(void)
+ {
+-	int numnodes, maxnode, a, b, got_nodes = 0;
++	int maxnode, a, b, got_nodes = 0;
+ 	int *node_to_use;
+-	long size, free_node_sizes;
+ 	if (numa_available() < 0) {
+ 		printf("no numa support in kernel\n");
+ 		exit(1);
+ 	}
+-	numnodes = numa_num_configured_nodes();
+ 	maxnode = numa_max_node();
+-	node_to_use = (int *)malloc(numnodes * sizeof(int));
++	node_to_use = (int *)malloc(maxnode * sizeof(int));
+ 	for (a = 0; a <= maxnode; a++) {
+-		size = numa_node_size(a, &free_node_sizes);
+-		if(size != -1)
++		if (numa_bitmask_isbitset(numa_nodes_ptr, a)){
+ 			node_to_use[got_nodes++] = a;
++		}
+ 	}
++
+ 	for (a = 0; a < got_nodes; a++){
+ 		printf("%03d: ", node_to_use[a]);
+ 		if (numa_distance(node_to_use[a], node_to_use[a]) != 10) {
+-- 
+2.7.4
+
